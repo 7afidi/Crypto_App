@@ -1,6 +1,6 @@
-import 'package:crypto_app/models/coin_model.dart';
-import 'package:crypto_app/repositories/crypto_repository.dart';
+import 'package:crypto_app/blocs/crypto/crypto_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen() : super();
@@ -13,54 +13,35 @@ class HomeScreen extends StatelessWidget {
         title: Text("Top Coins"),
       ),
       body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [Colors.black, Colors.grey[900]!])),
-        child: FutureBuilder(
-          future: CryptoRepository().getTopCoins(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<CoinModel>> snapShot) {
-            if (!snapShot.hasData) {
-              return Center(
-                  child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(Colors.tealAccent),
-              ));
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [Colors.black, Colors.grey[900]!])),
+          child:
+              BlocBuilder<CryptoBloc, CryptoState>(builder: (context, state) {
+            switch (state.status) {
+              case CryptoStatus.loaded:
+                return Text(
+                  state.coinList.length.toString(),
+                  style: TextStyle(color: Colors.white),
+                );
+
+              case CryptoStatus.error:
+                return Center(
+                  child: Text(
+                    "Error",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                );
+
+              default:
+                return Center(
+                    child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.tealAccent),
+                ));
             }
-            return ListView.builder(
-                itemCount: snapShot.data!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final coin = snapShot.data![index];
-                  return ListTile(
-                    leading: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          (index + 1).toString(),
-                          style: TextStyle(
-                              color: Colors.tealAccent,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                    title: Text(
-                      "${coin.fullName}",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    subtitle: Text(
-                      "${coin.name}",
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                    trailing: Text(
-                      "${coin.price}\$",
-                      style: TextStyle(color: Colors.tealAccent),
-                    ),
-                  );
-                });
-          },
-        ),
-      ),
+          })),
     );
   }
 }

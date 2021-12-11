@@ -1,7 +1,10 @@
+import 'package:crypto_app/blocs/crypto/crypto_bloc.dart';
+import 'package:crypto_app/repositories/crypto_repository.dart';
 import 'package:crypto_app/screens/home_screen.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() {
@@ -12,18 +15,23 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
         designSize: Size(390, 844),
-        builder: () => MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Flutter Demo',
-              theme: ThemeData(
-                  primaryColor: Colors.black),
-                 
-              home: const HomeScreen(),
+        builder: () => RepositoryProvider(
+              create: (context) => CryptoRepository(),
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'Flutter Demo',
+                theme: ThemeData(primaryColor: Colors.black),
+                home: BlocProvider(
+                  create: (context) => CryptoBloc(
+                    cryptoRepository: context.read<CryptoRepository>(),
+                  )..add(AppStarted()),
+                  child: HomeScreen(),
+                ),
+              ),
             ));
   }
 }
