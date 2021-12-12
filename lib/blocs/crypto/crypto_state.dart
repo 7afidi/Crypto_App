@@ -18,7 +18,7 @@ class CryptoState extends Equatable {
   CryptoState copyWith(
       {List<CoinModel>? coins, CryptoStatus? status, Failure? failure}) {
     return CryptoState(
-        coinList: coinList?? this.coinList,
+        coinList: coins?? this.coinList,
         status: status ?? this.status,
         failure: failure ?? this.failure);
   }

@@ -2,18 +2,19 @@ import 'dart:convert';
 
 import 'package:crypto_app/models/coin_model.dart';
 import 'package:crypto_app/models/failure_model.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class CryptoRepository {
   static const String _baseUrl = "https://min-api.cryptocompare.com/";
-  static const int perPage = 10;
+  static const int perPage = 14;
   final http.Client _httpClient;
   CryptoRepository({http.Client? httpClient})
       : _httpClient = httpClient ?? http.Client();
 
-  Future<List<CoinModel>> getTopCoins() async {
+  Future<List<CoinModel>> getTopCoins({required int page}) async {
     final requestUrl =
-        "$_baseUrl" + "data/top/totalvolfull?limit=$perPage&tsym=USD";
+        "$_baseUrl" + "data/top/totalvolfull?limit=$perPage&tsym=USD&page=$page";
     try {
       final response = await _httpClient.get(Uri.parse(requestUrl));
       if (response.statusCode == 200) {
